@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# ds-billing — DeepSeek 余额/今日消耗/峰谷时段 命令行入口
+# 插件启用后本文件所在 bin/ 目录会被加入 Bash PATH，可裸命令调用。
+#
+# 本机可能存在"默认 python3 无法运行"的情况（如被系统/安全软件 SIGKILL），
+# 因此这里按优先级探测可用解释器：先试系统自带 /usr/bin/python3 与各 Homebrew 版本，
+# 每个候选都会做一次真实启动测试，避免 exec 到一个会被杀死的 python。
+set -euo pipefail
+
+# 解析自身真实路径（兼容符号链接），定位插件根目录
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+ROOT="$(cd -P "$(dirname "$SOURCE")/.." >/dev/null 2>&1 && pwd)"
+
+PY=""
+for c in /usr/bin/python3 \
+         /opt/homebrew/bin/python3.14 \
+         /opt/homebrew/bin/python3.13 \
+         /opt/homebrew/bin/python3.12 \
+         /opt/homebrew/bin/python3.11 \
+         /usr/local/bin/python3 \
+         python3; do
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c 'pass' >/dev/null 2>&1; then
+    PY="$c"
+    break
+  fi
+done
+if [ -z "$PY" ]; then
+  echo "ds-billing: 找不到可用的 python3（已尝试系统与 Homebrew 各版本）" >&2
+  exit 1
+fi
+
+exec "$PY" "$ROOT/scripts/ds_billing.py" "$@"

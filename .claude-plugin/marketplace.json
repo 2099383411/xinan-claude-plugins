@@ -1,0 +1,17 @@
+{
+  "name": "xinan-claude-plugins",
+  "owner": {
+    "name": "信安云科（北京）科技有限责任公司"
+  },
+  "description": "信安云科（北京）科技有限责任公司出品的 Claude Code 插件集合，当前包含 ds-billing（DeepSeek 余额 / 今日消耗 / 峰谷时段 + 常驻状态栏）",
+  "plugins": [
+    {
+      "name": "ds-billing",
+      "source": "./plugins/ds-billing",
+      "description": "DeepSeek 余额/今日消耗/高峰空闲时段倒计时 + 常驻状态栏",
+      "version": "1.1.3",
+      "displayName": "信安云科 · DeepSeek Billing（余额 / 今日消耗 / 峰谷时段）",
+      "license": "Apache-2.0"
+    }
+  ]
+}
